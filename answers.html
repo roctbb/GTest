@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="static/foto.ico" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Проверка</title>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+
+
+    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+</head>
+<body class="grey lighten-5">
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+<nav class="nav-extended">
+    <div class="nav-wrapper">
+        <a href="#" class="brand-logo">Check</a>
+        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+    </div>
+    <div class="nav-content">
+        <ul class="tabs tabs-transparent">
+            <li class="tab"><a href="#list">Статистика</a></li>
+            <li class="tab"><a href="#base">База</a></li>
+            <li class="tab"><a href="#bio">Биоинформатика</a></li>
+            <li class="tab"><a href="#data">Анализ данных</a></li>
+            <li class="tab"><a href="#robo">Робототехника</a></li>
+            <li class="tab"><a href="#prog">Прикладное программирование</a></li>
+            <li class="tab"><a href="#end">Завершить проверку</a></li>
+
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <div id="list" class="col s12" style="padding-top: 20px;">
+        <div class="row">
+            <div class="col s12 m12">
+                <p>Тут скоро будет статистика</p>
+            </div>
+        </div>
+    </div>
+        <div class="container">
+            <form method="post">
+                {% for key, value in answers.items() %}
+                <div id="{{key}}" class="col s12" style="padding-top: 20px;">
+                    <div class="row">
+                        {%for question in value %}
+                        <div class="col s12 m12">
+                            <div class="card">
+                                <div class="card-content">
+                                    <span class="card-title">{{question["text"]}}</span>
+                                    <div class="row">
+                                        {%if question["type"]=="var"%}
+
+                                            {%for i in range(len(question["variants"]))%}
+                                                <p>
+                                                    <input type="checkbox" id="{{str(question['_id'])+'-'+str(i)}}"  {% if (i in question['answer_variants']) %} checked {%end%} disabled>
+                                                    <label for="{{str(question['_id'])+'-'+str(i)}}">{{question["variants"][i]}}</label>
+                                                </p>
+                                            {%end%}
+                                        {%else%}
+                                            <div class="input-field col s12">
+                                                <textarea id="{{str(question['_id'])}}" class="materialize-textarea" disabled>{{question['answer']}}</textarea>
+                                                <label for="{{str(question['_id'])}}">Ответ</label>
+                                            </div>
+                                        {%end%}
+                                        Оценка:
+                                        <div class="input-field inline">
+                                            <input style="text-align: right;" type="text" id="{{str(question['_id'])}}_mark" name="{{str(question['_id'])}}" value="{{str(question['points'])}}"/>
+                                            <label for="{{str(question['_id'])}}_mark">Оценка</label>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        {%end%}
+                    </div>
+                </div>
+
+                {%end%}
+                <div id="end" class="col s12" style="padding-top: 20px;">
+                    <div class="row">
+                        <div class="col s12 m12">
+                            <div class="card">
+                                <div class="card-content">
+                                    <span class="card-title">Завершение проверки</span>
+                                    <div class="row">
+                                        <button>Работа проверена</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+</body>
+</html>

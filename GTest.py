@@ -44,6 +44,7 @@ class StudentTestingHandler(tornado.web.RequestHandler):
             answers[id]["answer"] = ""
             answers[id]["answer_variants"] = []
             answers[id]["points"] = 0
+
         for question in questions:
             id = str(question["_id"])
             print(question)
@@ -57,26 +58,63 @@ class StudentTestingHandler(tornado.web.RequestHandler):
                 answer = self.get_argument(id, "")
                 if answer != "":
                     answers[id]["answer"] = answer
-        student["answers"] = answers
+        student["answers"] = list(answers.values())
         student["submitted"] = True
+        student["checked"] = False
         print(student)
         students_collection.update({'_id': ObjectId(user_id)}, student)
 
+
         self.redirect('/submit')
 
-
-class QuestionRegistrationHandler(tornado.web.RequestHandler):
+class SubmitHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render("question_registrate.html")
-        # type = self.get_argument("type")
+        self.render("submit.html")
+
+class StudentsAnswersHandler(tornado.web.RequestHandler):
+    def get(self):
+        id = self.get_argument("id")
+        user = students_collection.find_one({"_id": ObjectId(id)})
+        answers = {}
+        directions = ['base', 'bio', 'robo', 'data', 'prog']
+        for dir in directions:
+            answers[dir] = []
+        for answer in user["answers"]:
+            print(user["answers"])
+            answers[answer["direction"]].append(answer)
+        questions = question_collection.find()
+        self.render("answers.html", answers=answers, questions=questions)
+        dict = {}
+        for direction in directions:
+            summa = 0
+            for answer in user['answers']:
+                if answer["type"]==direction:
+                    sum+=answer["points"]
+            user["direction"]=summa
+            #self.write(direction, "-", summa, "\n")
+
 
     def post(self):
-        type = self.get_argument("type")
-        text = self.get_argument("text")
-        level = self.get_argument("level")
-        answer = answers_collection.insert_one({"text": text})
-        answer["level"] = level
-        answer["type"] = type
+        id = self.get_argument("id")
+        user = students_collection.find_one({"_id": ObjectId(id)})
+        for answer in user["answers"]:
+            points = self.get_argument(str(answer['_id']), 0)
+            answer["points"]=points
+        user["checked"] = True
+        students_collection.update({'_id': ObjectId(id)}, user)
+        self.redirect("/admin/answers?id="+id)
+
+
+
+# class QuestionRegistrationHandler(tornado.web.RequestHandler):
+#     def get(self):
+#         self.render("question_registrate.html")
+#     def post(self):
+#         type = self.get_argument("type")
+#         text = self.get_argument("text")
+#         level = self.get_argument("level")
+
+
 
 
 # class
@@ -90,7 +128,9 @@ class SubmitHandler(tornado.web.RequestHandler):
 def make_app():
     return tornado.web.Application([
         (r"/", StudentRegistrationHandler),
-        (r"/test", StudentTestingHandler)
+        (r"/test", StudentTestingHandler),
+        (r"/submit", SubmitHandler),
+        (r"/admin/answers", StudentsAnswersHandler)
     ], debug=True)
 
 
@@ -98,10 +138,6 @@ if __name__ == "__main__":
     app = make_app()
     app.listen(8888)
     tornado.ioloop.IOLoop.current().start()
-
-
-
-
 
 
     # user_id = self.get_secure_cookie("user")
