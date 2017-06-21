@@ -1,7 +1,7 @@
 import tornado.ioloop
 import tornado.web
-from pymongo import MongoClient
 from bson.objectid import ObjectId
+from pymongo import MongoClient
 
 connection = MongoClient("mongodb://Danya:lopata@ds129352.mlab.com:29352/gth_tests")
 database = connection["gth_tests"]
@@ -28,9 +28,8 @@ class StudentTestingHandler(tornado.web.RequestHandler):
         directions = ["robo", "prog", "data", "bio", "base"]
         for direction in directions:
             questions[direction] = list(question_collection.find({"direction": direction}))
-        print()
-        print(questions)
-        self.render("test.html", questions=questions)
+        users=list(question_collection.find({"submitted":True}))
+        self.render("test.html", questions=questions, users=users)
 
     def post(self):
         user_id = self.get_cookie('user')
@@ -67,16 +66,43 @@ class StudentTestingHandler(tornado.web.RequestHandler):
 
 class QuestionRegistrationHandler(tornado.web.RequestHandler):
     def get(self):
+        questions = {}
+        directions = ["robo", "prog", "data", "bio", "base"]
+        for direction in directions:
+            questions[direction] = list(question_collection.find({"direction": direction}))
+        print()
+        print(questions)
         self.render("question_registrate.html")
         # type = self.get_argument("type")
 
     def post(self):
         type = self.get_argument("type")
-        text = self.get_argument("text")
-        level = self.get_argument("level")
-        answer = answers_collection.insert_one({"text": text})
-        answer["level"] = level
-        answer["type"] = type
+
+        if type=="txt":
+            text = self.get_argument("text")
+            level = self.get_argument("level")
+            direction = self.get_argument("direction")
+            question = {"text": text,
+                        "direction": direction,
+                        "type": type,
+                        "level": level
+                        }
+            question_collection.insert_one(question)
+
+        elif type=="var":
+            text = self.get_argument("text")
+            level = self.get_argument("level")
+            direction = self.get_argument("direction")
+            variants = []
+            for i in range(0, 4):
+                variants.append(self.get_argument("variants"))
+            question = {"text": text,
+                        "variants": variants,
+                        "direction": direction,
+                        "type": type,
+                        "level": level
+                        }
+            question_collection.insert_one(question)
 
 
 # class
