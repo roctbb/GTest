@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Проверка</title>
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+
+    <!-- Compiled and minified JavaScript -->
+
+
+    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+<style>
+.navbar-material .nav-wrapper {
+  background: white;
+  margin: 20px;
+}
+.navbar-material .nav-wrapper .brand-logo img {
+  height: 64px;
+}
+@media (max-width: 600px) {
+  .navbar-material .nav-wrapper .brand-logo img {
+    height: 56px;
+  }
+}
+    </style>
+</head>
+<body class="grey lighten-5">
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+<nav class="nav-extended light-blue darken-3">
+    <div class="nav-wrapper" style="padding-left: 30px;">
+        <img style="padding: 10px;" height="60px" src="http://roctbb.ru/logo.png" >
+        <a href="#" class="brand-logo">Quizer</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+      </ul>
+    </div>
+    <div class="nav-content">
+        <ul class="tabs tabs-transparent">
+            <li class="tab"><a href="#list">Ответы</a></li>
+            <li class="tab"><a href="#base">База</a></li>
+            <li class="tab"><a href="#bio">Биоинформатика</a></li>
+            <li class="tab"><a href="#data">Анализ данных</a></li>
+            <li class="tab"><a href="#robo">Робототехника</a></li>
+            <li class="tab"><a href="#prog">Прикладное программирование</a></li>
+
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <div id="list" class="col s12" style="padding-top: 20px;">
+
+
+        <div class="row">
+            <div class="col s12 m12">
+                <div class="collection">
+                    {% for student in students %}
+
+                    <a href="/admin/answers?id={{student['_id']}}" class="collection-item">{{student["name"]}}</a>
+
+                    {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <form action="#">
+
+        {% for key, value in questions.items() %}
+        <div id="{{key}}" class="col s12" style="padding-top: 20px;">
+            <div class="big card white">
+                <div class="card-content white-text">
+                    <div class="row">
+                        <div class="col s12">
+                            <ul class="tabs">
+                                <li class="tab col s3"><a href="#test11{{key}}">Вопрос с выбором ответа</a></li>
+                                <li class="tab col s3"><a class="active" href="#test12{{key}}">Вопрос с текстовым ответом</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div id="test11{{key}}" class="col s12">
+                            <div class="input-field col s12">
+                                <input id="quest" type="text" class="validate">
+                                <label for="quest">Вопрос</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <input id="score" type="text" class="validate">
+                                <label for="score">Баллы</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="point1" type="text" class="validate">
+                                <label for="point1">Пункт</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="point2" type="text" class="validate">
+                                <label for="point2">Пункт</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="point3" type="text" class="validate">
+                                <label for="point3">Пункт</label>
+                            </div>
+                            <div class="input-field col s6">
+                                <input id="point4" type="text" class="validate">
+                                <label for="point4">Пункт</label>
+                            </div>
+                        </div>
+                        <div id="test12{{key}}" class="col s12">
+                            <div class="input-field col s12">
+                                <input id="quest1" type="text" class="validate">
+                                <label for="quest1">Вопрос</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <input id="score1" type="text" class="validate">
+                                <label for="score1">Баллы</label>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                {%for question in questions[key]%}
+                <div class="col s12 m12">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">{{question["text"]}}</span>
+                            <div class="row">
+                                {%if question["type"]=="var"%}
+
+                                {%for i in range(len(question["variants"]))%}
+                                <p>
+                                    <input type="checkbox" id="{{str(question['_id'])+'-'+str(i)}}"
+                                           name="{{str(question['_id'])+'-'+str(i)}}" value="on">
+                                    <label for="{{str(question['_id'])+'-'+str(i)}}">{{question["variants"][i]}}</label>
+                                </p>
+                                {%end%}
+                                {%else%}
+                                <div class="input-field col s12">
+                                    <textarea id="{{str(question['_id'])}}" class="materialize-textarea"
+                                              name="{{str(question['_id'])}}"></textarea>
+                                    <label for="{{str(question['_id'])}}">Ответ</label>
+                                </div>
+                                {%end%}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                {%end%}
+            </div>
+        </div>
+
+        {%end%}
+    </form>
+</div>
+</body>
+</html>
