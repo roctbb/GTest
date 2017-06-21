@@ -11,14 +11,30 @@
 
 
     <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
+<style>
+.navbar-material .nav-wrapper {
+  background: white;
+  margin: 20px;
+}
+.navbar-material .nav-wrapper .brand-logo img {
+  height: 64px;
+}
+@media (max-width: 600px) {
+  .navbar-material .nav-wrapper .brand-logo img {
+    height: 56px;
+  }
+}
+    </style>
 </head>
 <body class="grey lighten-5">
 <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
-<nav class="nav-extended">
-    <div class="nav-wrapper">
-        <a href="#" class="brand-logo">Test</a>
-        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+<nav class="nav-extended light-blue darken-3">
+    <div class="nav-wrapper" style="padding-left: 30px;">
+        <img style="padding: 10px;" height="60px" src="http://roctbb.ru/logo.png" >
+        <a href="#" class="brand-logo">Quizer</a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+      </ul>
     </div>
     <div class="nav-content">
         <ul class="tabs tabs-transparent">

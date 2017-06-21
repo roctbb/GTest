@@ -11,7 +11,7 @@
 
 
     <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
-<style>
+    <style>
 .navbar-material .nav-wrapper {
   background: white;
   margin: 20px;
@@ -34,7 +34,7 @@
         <img style="padding: 10px;" height="60px" src="http://roctbb.ru/logo.png" >
         <a href="#" class="brand-logo">Quizer</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-      </ul>
+        </ul>
     </div>
     <div class="nav-content">
         <ul class="tabs tabs-transparent">
@@ -69,7 +69,7 @@
         {% for key, value in questions.items() %}
         <div id="{{key}}" class="col s12" style="padding-top: 20px;">
             <div class="big card white">
-                <div class="card-content white-text">
+                <div class="card-content">
                     <div class="row">
                         <div class="col s12">
                             <ul class="tabs">
@@ -79,40 +79,43 @@
                             </ul>
                         </div>
                         <div id="test11{{key}}" class="col s12">
-                            <div class="input-field col s12">
-                                <input id="quest" type="text" class="validate">
-                                <label for="quest">Вопрос</label>
-                            </div>
-                            <div class="input-field col s12">
-                                <input id="score" type="text" class="validate">
-                                <label for="score">Баллы</label>
-                            </div>
-                            <div class="input-field col s6">
-                                <input id="point1" type="text" class="validate">
-                                <label for="point1">Пункт</label>
-                            </div>
-                            <div class="input-field col s6">
-                                <input id="point2" type="text" class="validate">
-                                <label for="point2">Пункт</label>
-                            </div>
-                            <div class="input-field col s6">
-                                <input id="point3" type="text" class="validate">
-                                <label for="point3">Пункт</label>
-                            </div>
-                            <div class="input-field col s6">
-                                <input id="point4" type="text" class="validate">
-                                <label for="point4">Пункт</label>
-                            </div>
+                            <form method="post">
+                                <input type="hidden" name="direction" value="{{key}}">
+                                <input type="hidden" name="type" value="var">
+                                <div class="input-field col s12">
+                                    <input id="quest{{key}}"  name="text" type="text" class="validate">
+                                    <label for="quest{{key}}">Вопрос</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input name="variants0" id="point1{{key}}" type="text" class="validate">
+                                    <label for="point1{{key}}">Пункт</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input name="variants1" id="point2{{key}}" type="text" class="validate">
+                                    <label for="point2{{key}}">Пункт</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input name="variants2" id="point3{{key}}" type="text" class="validate">
+                                    <label for="point3{{key}}">Пункт</label>
+                                </div>
+                                <div class="input-field col s6">
+                                    <input name="variants3" id="point4{{key}}" type="text" class="validate">
+                                    <label for="point4{{key}}">Пункт</label>
+                                </div>
+                                <input type="submit" class="btn btn-success" value="Добавить">
+                            </form>
                         </div>
                         <div id="test12{{key}}" class="col s12">
-                            <div class="input-field col s12">
-                                <input id="quest1" type="text" class="validate">
-                                <label for="quest1">Вопрос</label>
-                            </div>
-                            <div class="input-field col s12">
-                                <input id="score1" type="text" class="validate">
-                                <label for="score1">Баллы</label>
-                            </div>
+                            <form method="post">
+                                <input type="hidden" name="direction" value="{{key}}">
+                                <input type="hidden" name="type" value="txt">
+                                <div class="input-field col s12">
+                                    <input id="quest1{{key}}" name="text" class="validate">
+                                    <label for="quest1{{key}}">Вопрос</label>
+                                </div>
+                                <input type="submit" class="btn btn-success" value="Добавить">
+
+                            </form>
                         </div>
 
                     </div>
