@@ -5,34 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Проверка</title>
     <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+    <link rel="stylesheet" href="/static/materialize.min.css">
 
     <!-- Compiled and minified JavaScript -->
 
 
-    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
     <style>
-.navbar-material .nav-wrapper {
-  background: white;
-  margin: 20px;
-}
-.navbar-material .nav-wrapper .brand-logo img {
-  height: 64px;
-}
-@media (max-width: 600px) {
-  .navbar-material .nav-wrapper .brand-logo img {
-    height: 56px;
-  }
-}
+        .navbar-material .nav-wrapper {
+            background: white;
+            margin: 20px;
+        }
+
+        .card-title {
+            font-size: 20px !important;
+        }
+
+        .navbar-material .nav-wrapper .brand-logo img {
+            height: 64px;
+        }
+        textarea.materialize-textarea:disabled
+        {
+            color: black !important;
+        }
+
+        @media (max-width: 600px) {
+            .navbar-material .nav-wrapper .brand-logo img {
+                height: 56px;
+            }
+        }
     </style>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="/static/plotly-latest.min.js"></script>
 </head>
 <body class="grey lighten-5">
-<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+<script type="text/javascript" src="/static/jquery-2.1.1.min.js"></script>
+<script src="/static/materialize.min.js"></script>
 <nav class="nav-extended light-blue darken-3">
     <div class="nav-wrapper" style="padding-left: 30px;">
-        <img style="padding: 10px;" height="60px" src="http://roctbb.ru/logo.png" >
+        <img style="padding: 10px;" height="60px" src="/static/logo.png">
         <a href="/admin" class="brand-logo">Quizer</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
         </ul>
@@ -68,13 +77,16 @@
                         </div>
 
                         <script>
-                            var data = [
-                              {
-                                x: ['База', 'Биоинформатика', 'Анализ данных', 'Робототехника', 'Прикладное программирование'],
-                                y: [{{user["base"]}}, {{user["bio"]}}, {{user["data"]}},{{user["robo"]}},{{user["prog"]}}],
-                                type: 'bar'
-                              }
-                            ];
+                            var data = [{
+                                    x: ['База', 'Биоинформатика', 'Анализ данных', 'Робототехника', 'Прикладное программирование'],
+                                    y: [{{user["base"]}}, {{user["bio"]}},
+                            {{user["data"]}},
+                            {{user["robo"]}},
+                            {{user["prog"]}}],
+                            type: 'bar'
+                            }
+                            ]
+                            ;
 
                             Plotly.newPlot('plot', data);
                         </script>
@@ -88,43 +100,44 @@
     <div class="container">
         <form method="post">
             {% for key, value in answers.items() %}
-            <div id="{{key}}" class="col s12" style="padding-top: 20px;">
-                <div class="row">
-                    {%for question in value %}
-                    <div class="col s12 m12">
-                        <div class="card">
-                            <div class="card-content">
-                                <span class="card-title">{{question["text"]}}</span>
-                                <div class="row">
-                                    {%if question["type"]=="var"%}
+                <div id="{{key}}" class="col s12 m12" style="padding-top: 20px;">
+                    <div class="row">
+                        {%for question in value %}
+                            <div class="col s12 m12">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <span class="card-title">{% raw question["text"] %}</span>
+                                        <div class="row">
+                                            {%if question["type"]=="var"%}
 
-                                    {%for i in range(len(question["variants"]))%}
-                                    <p>
-                                        <input type="checkbox" id="{{str(question['_id'])+'-'+str(i)}}"  {% if (i in question['answer_variants']) %} checked {%end%} disabled>
-                                        <label for="{{str(question['_id'])+'-'+str(i)}}">{{question["variants"][i]}}</label>
-                                    </p>
-                                    {%end%}
-                                    {%else%}
-                                    <div class="input-field col s12">
-                                        <textarea id="{{str(question['_id'])}}" class="materialize-textarea" disabled>{{question['answer']}}</textarea>
-                                        <label for="{{str(question['_id'])}}">Ответ</label>
-                                    </div>
-                                    {%end%}
-                                    Оценка:
-                                    <div class="input-field inline">
-                                        <input style="text-align: right;" type="text" id="{{str(question['_id'])}}_mark" name="{{str(question['_id'])}}" value="{{str(question['points'])}}"/>
-                                        <label for="{{str(question['_id'])}}_mark">Оценка</label>
-                                    </div>
+                                                {%for i in range(len(question["variants"]))%}
+                                                    <p>
+                                                        <input type="checkbox" id="{{str(question['_id'])+'-'+str(i)}}" {% if (i in
+                                                               question['answer_variants']) %} checked {%end%} disabled>
+                                                        <label for="{{str(question['_id'])+'-'+str(i)}}">{{question["variants"][i]}}</label>
+                                                    </p>
+                                                {%end%}
+                                            {%else%}
+                                                <div class="input-field col s12">
+                                                    <textarea id="{{str(question['_id'])}}" class="materialize-textarea" disabled>{{question['answer']}}</textarea>
+                                                    <label for="{{str(question['_id'])}}">Ответ</label>
+                                                </div>
+                                            {%end%}
+                                            Оценка:
+                                            <div class="input-field inline">
+                                                <input style="text-align: right;" type="text" id="{{str(question['_id'])}}_mark"
+                                                       name="{{str(question['_id'])}}" value="{{str(question['points'])}}"/>
+                                                <label for="{{str(question['_id'])}}_mark">Оценка</label>
+                                            </div>
 
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
-                        </div>
-
+                        {%end%}
                     </div>
-                    {%end%}
                 </div>
-            </div>
-
             {%end%}
             <div id="end" class="col s12" style="padding-top: 20px;">
                 <div class="row">
@@ -133,7 +146,7 @@
                             <div class="card-content">
                                 <span class="card-title">Завершение проверки</span>
                                 <div class="row">
-                                    <button>Работа проверена</button>
+                                    <button class="waves-effect waves-light btn">Работа проверена</button>
                                 </div>
                             </div>
                         </div>

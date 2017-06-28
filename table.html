@@ -5,33 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Проверка</title>
     <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
-
+    <link rel="stylesheet" href="/static/materialize.min.css">
+    <link rel="stylesheet" href="/static/simplemde.min.css">
+    <script src="/static/simplemde.min.js"></script>
     <!-- Compiled and minified JavaScript -->
-
-
-    <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
     <style>
-.navbar-material .nav-wrapper {
-  background: white;
-  margin: 20px;
-}
-.navbar-material .nav-wrapper .brand-logo img {
-  height: 64px;
-}
-@media (max-width: 600px) {
-  .navbar-material .nav-wrapper .brand-logo img {
-    height: 56px;
-  }
-}
+        .navbar-material .nav-wrapper {
+            background: white;
+            margin: 20px;
+        }
+
+        .card-title {
+            font-size: 20px !important;
+        }
+
+        .navbar-material .nav-wrapper .brand-logo img {
+            height: 64px;
+        }
+
+        @media (max-width: 600px) {
+            .navbar-material .nav-wrapper .brand-logo img {
+                height: 56px;
+            }
+        }
     </style>
 </head>
 <body class="grey lighten-5">
-<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+<script type="text/javascript" src="/static/jquery-2.1.1.min.js"></script>
+<script src="/static/materialize.min.js"></script>
 <nav class="nav-extended light-blue darken-3">
     <div class="nav-wrapper" style="padding-left: 30px;">
-        <img style="padding: 10px;" height="60px" src="http://roctbb.ru/logo.png" >
+        <img style="padding: 10px;" height="60px" src="/static/logo.png">
         <a href="#" class="brand-logo">Quizer</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
         </ul>
@@ -74,7 +78,8 @@
                         <div class="col s12">
                             <ul class="tabs">
                                 <li class="tab col s3"><a href="#test11{{key}}">Вопрос с выбором ответа</a></li>
-                                <li class="tab col s3"><a class="active" href="#test12{{key}}">Вопрос с текстовым ответом</a>
+                                <li class="tab col s3"><a href="#test12{{key}}">Вопрос с текстовым
+                                    ответом</a>
                                 </li>
                             </ul>
                         </div>
@@ -83,8 +88,8 @@
                                 <input type="hidden" name="direction" value="{{key}}">
                                 <input type="hidden" name="type" value="var">
                                 <div class="input-field col s12">
-                                    <input id="quest{{key}}"  name="text" type="text" class="validate">
-                                    <label for="quest{{key}}">Вопрос</label>
+                                    <textarea id="quest{{key}}" name="text" class="materialize-textarea"></textarea>
+                                    <!--<label for="quest{{key}}">Вопрос</label>-->
                                 </div>
                                 <div class="input-field col s6">
                                     <input name="variants0" id="point1{{key}}" type="text" class="validate">
@@ -110,8 +115,8 @@
                                 <input type="hidden" name="direction" value="{{key}}">
                                 <input type="hidden" name="type" value="txt">
                                 <div class="input-field col s12">
-                                    <input id="quest1{{key}}" name="text" class="validate">
-                                    <label for="quest1{{key}}">Вопрос</label>
+                                    <textarea id="quest1{{key}}" name="text" class="materialize-textarea"></textarea>
+                                    <!--<label for="quest1{{key}}">Вопрос</label>-->
                                 </div>
                                 <input type="submit" class="btn btn-success" value="Добавить">
 
@@ -120,6 +125,11 @@
 
                     </div>
 
+                    <script>
+                        var simplemde = new SimpleMDE({element: document.getElementById("quest{{key}}"), spellChecker: false});
+                        var simplemde1 = new SimpleMDE({element: document.getElementById("quest1{{key}}"), spellChecker: false});
+                    </script>
+
                 </div>
             </div>
             <div class="row">
@@ -127,7 +137,7 @@
                 <div class="col s12 m12">
                     <div class="card">
                         <div class="card-content">
-                            <span class="card-title">{{question["text"]}}</span>
+                            <span class="card-title">{% raw question["text"] %}</span>
                             <div class="row">
                                 {%if question["type"]=="var"%}
 
@@ -145,6 +155,8 @@
                                     <label for="{{str(question['_id'])}}">Ответ</label>
                                 </div>
                                 {%end%}
+                                <p>
+                                <a href="/admin/delete?id={{str(question['_id'])}}">удалить вопрос</a></p>
                             </div>
                         </div>
                     </div>
@@ -156,6 +168,11 @@
 
         {%end%}
     </form>
+    <script>
+        $(document).ready(function () {
+            $('ul.tabs').tabs('select_tab', '{{selected_tab}}');
+        });
+    </script>
 </div>
 </body>
 </html>

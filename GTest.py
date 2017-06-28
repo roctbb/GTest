@@ -1,14 +1,47 @@
+import base64
 
-
+import functools
 import tornado.ioloop
 import tornado.web
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+import markdown
 
 
+def authenticated():
+    def decore(f):
+        def _request_auth(handler):
+            handler.set_header('WWW-Authenticate', 'Basic realm=tmr')
+            handler.set_status(401)
+            handler.finish()
+            return False
 
-connection = MongoClient("mongodb://Danya:lopata@ds129352.mlab.com:29352/gth_tests")
-database = connection["gth_tests"]
+        @functools.wraps(f)
+        def new_f(*args):
+            handler = args[0]
+
+            auth_header = handler.request.headers.get('Authorization')
+            if auth_header is None:
+                return _request_auth(handler)
+            if not auth_header.startswith('Basic '):
+                return _request_auth(handler)
+
+            auth_decoded = base64.decodestring(auth_header[6:].encode('ascii'))
+            print(auth_decoded)
+            username, password = auth_decoded.decode('ascii').split(':', 2)
+
+            if (username == 'user1' and password == "pass1"):
+                f(*args)
+            else:
+                _request_auth(handler)
+
+        return new_f
+
+    return decore
+
+
+connection = MongoClient("mongodb://localhost:27017/quizer")
+database = connection["quizer"]
 students_collection = database["Students"]
 question_collection = database["Questions"]
 
@@ -21,7 +54,6 @@ class StudentRegistrationHandler(tornado.web.RequestHandler):
         name = self.get_argument("name")
         student = {"name": name, "submitted": False}
         students_collection.insert_one(student)
-        print(student['_id'])
         user_id = self.set_cookie("user", str(student['_id']))
         return self.redirect('/test')
 
@@ -31,7 +63,12 @@ class StudentTestingHandler(tornado.web.RequestHandler):
         questions = {}
         directions = ["robo", "prog", "data", "bio", "base"]
         for direction in directions:
-            questions[direction] = list(question_collection.find({"direction": direction}))
+            questions[direction] = []
+            temp = list(question_collection.find({"direction": direction}))
+            for q in temp:
+                q["text"] = markdown.markdown(q["text"])
+                questions[direction].append(q)
+
         print()
         print(questions)
         self.render("test.html", questions=questions)
@@ -77,13 +114,21 @@ class SubmitHandler(tornado.web.RequestHandler):
 
 
 class StudentsListHandler(tornado.web.RequestHandler):
+    @authenticated()
     def get(self):
+        selected_tab = self.get_argument("direction", 'table')
         students = students_collection.find({"submitted": True})
         questions = {}
         directions = ["robo", "prog", "data", "bio", "base"]
         for direction in directions:
-            questions[direction] = list(question_collection.find({"direction": direction}))
-        self.render("table.html", students=students, questions=questions)
+            questions[direction] = []
+            temp = list(question_collection.find({"direction": direction}))
+            for q in temp:
+                q["text"] = markdown.markdown(q["text"])
+                questions[direction].append(q)
+        self.render("table.html", students=students, questions=questions, selected_tab=selected_tab)
+
+    @authenticated()
     def post(self):
         type = self.get_argument("type")
 
@@ -104,7 +149,7 @@ class StudentsListHandler(tornado.web.RequestHandler):
             direction = self.get_argument("direction")
             variants = []
             for i in range(0, 4):
-                variants.append(self.get_argument("variants"+str(i)))
+                variants.append(self.get_argument("variants" + str(i)))
             question = {"text": text,
                         "variants": variants,
                         "direction": direction,
@@ -113,10 +158,18 @@ class StudentsListHandler(tornado.web.RequestHandler):
                         }
             question_collection.insert_one(question)
         print(type)
-        self.redirect('/admin')
+        self.redirect('/admin?direction='+direction)
 
+class QuestionDeleteHandler(tornado.web.RequestHandler):
+    @authenticated()
+    def get(self):
+        id = self.get_argument("id")
+        question = question_collection.find_one({'_id': ObjectId(id)})
+        question_collection.delete_one({'_id': ObjectId(id)})
+        self.redirect('/admin?direction=' + question['direction'])
 
 class StudentsAnswersHandler(tornado.web.RequestHandler):
+    @authenticated()
     def get(self):
         id = self.get_argument("id")
         user = students_collection.find_one({"_id": ObjectId(id)})
@@ -137,6 +190,7 @@ class StudentsAnswersHandler(tornado.web.RequestHandler):
         print(user)
         self.render("answers.html", answers=answers, questions=questions, user=user)
 
+    @authenticated()
     def post(self):
         id = self.get_argument("id")
         user = students_collection.find_one({"_id": ObjectId(id)})
@@ -149,33 +203,16 @@ class StudentsAnswersHandler(tornado.web.RequestHandler):
         self.redirect("/admin/answers?id=" + id)
 
 
-class QuestionRegistrationHandler(tornado.web.RequestHandler):
-    def get(self):
-        questions = {}
-        directions = ["robo", "prog", "data", "bio", "base"]
-        for direction in directions:
-            questions[direction] = list(question_collection.find({"direction": direction}))
-        print()
-        print(questions)
-        self.render("question_registrate.html")
-        # type = self.get_argument("type")
-
-
-
-
-class SubmitHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render("submit.html")
-
-
 def make_app():
     return tornado.web.Application([
         (r"/", StudentRegistrationHandler),
         (r"/test", StudentTestingHandler),
         (r"/submit", SubmitHandler),
         (r"/admin", StudentsListHandler),
+        (r"/admin/delete", QuestionDeleteHandler),
         (r"/admin/answers", StudentsAnswersHandler),
-        (r"/admin/registate", QuestionRegistrationHandler)
+        (r'/images/(.*)', tornado.web.StaticFileHandler, {'path': 'images'}),
+        (r'/static/(.*)', tornado.web.StaticFileHandler, {'path': 'static'})
     ], debug=True)
 
 
