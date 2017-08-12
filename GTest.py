@@ -1,6 +1,8 @@
 import base64
 import os
 import functools
+import uuid
+
 import tornado.ioloop
 import tornado.web
 from pymongo import MongoClient
@@ -49,8 +51,10 @@ def authenticated():
     return decore
 
 
-connection = MongoClient("mongodb://localhost:27017/quizer")
-database = connection["quizer"]
+#connection = MongoClient("mongodb://localhost:27017/quizer")
+connection = MongoClient("mongodb://GoTo:GoTo@ds143532.mlab.com:43532/gtest")
+database = connection["gtest"]
+#database = connection["quizer"]
 students_collection = database["Students"]
 question_collection = database["Questions"]
 
@@ -113,6 +117,24 @@ class StudentTestingHandler(tornado.web.RequestHandler):
 class SubmitHandler(tornado.web.RequestHandler):
     def get(self):
         self.render("submit.html")
+
+
+class UploadHandler(tornado.web.RequestHandler):
+    @authenticated()
+    def get(self):
+        self.render("uploader.html", result="")
+
+    @authenticated()
+    def post(self):
+        fileinfo = self.request.files['image'][0]
+        fname = fileinfo['filename']
+        extn = os.path.splitext(fname)[1]
+        cname = str(uuid.uuid4()) + extn
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'images/' + cname);
+        fh = open(path, 'wb')
+        fh.write(fileinfo['body'])
+
+        self.render("uploader.html", result='images/' + cname)
 
 
 class StudentsListHandler(tornado.web.RequestHandler):
@@ -215,6 +237,7 @@ def make_app():
     return tornado.web.Application([
         (r"/", StudentRegistrationHandler),
         (r"/test", StudentTestingHandler),
+        (r"/upload", UploadHandler),
         (r"/submit", SubmitHandler),
         (r"/admin", StudentsListHandler),
         (r"/admin/delete", QuestionDeleteHandler),
