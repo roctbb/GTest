@@ -15,10 +15,17 @@
             background: white;
             margin: 20px;
         }
+		code {
+    			white-space: pre;
+		}
 
         .card-title {
             font-size: 20px !important;
         }
+
+		strong {
+	 		font-weight: 700;
+		}
 
         .navbar-material .nav-wrapper .brand-logo img {
             height: 64px;
@@ -27,6 +34,10 @@
         {
             color: black !important;
         }
+		.card .card-content p {
+			margin-top: 15px !important;
+			margin-bottom: 15px !important;
+		}
 
         @media (max-width: 600px) {
             .navbar-material .nav-wrapper .brand-logo img {
@@ -42,7 +53,7 @@
 <nav class="nav-extended light-blue darken-3">
     <div class="nav-wrapper" style="padding-left: 30px;">
         <img style="padding: 10px;" height="60px" src="/static/logo.png">
-        <a href="/admin" class="brand-logo">Quizer</a>
+        <a href="/admin" class="brand-logo">Quizer - {{user["name"]}}</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
         </ul>
     </div>
@@ -106,7 +117,7 @@
                             <div class="col s12 m12">
                                 <div class="card">
                                     <div class="card-content">
-                                        <span class="card-title">{% raw question["text"] %}</span>
+                                        {% raw question["text"] %}
                                         <div class="row">
                                             {%if question["type"]=="var"%}
 
@@ -119,8 +130,10 @@
                                                 {%end%}
                                             {%else%}
                                                 <div class="input-field col s12">
-                                                    <textarea id="{{str(question['_id'])}}" class="materialize-textarea" disabled>{{question['answer']}}</textarea>
-                                                    <label for="{{str(question['_id'])}}">Ответ</label>
+												 <strong>Ответ</strong><br>
+													<blockquote>
+                                                    {% raw question['answer'] %}
+													</blockquote>
                                                 </div>
                                             {%end%}
                                             Оценка:

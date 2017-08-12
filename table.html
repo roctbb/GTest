@@ -14,15 +14,24 @@
             background: white;
             margin: 20px;
         }
+		code {
+    			white-space: pre;
+		}
 
         .card-title {
             font-size: 20px !important;
         }
+		strong {
+	 		font-weight: 700;
+		}
 
         .navbar-material .nav-wrapper .brand-logo img {
             height: 64px;
         }
-
+		.card .card-content p {
+			margin-top: 15px !important;
+			margin-bottom: 15px !important;
+		}
         @media (max-width: 600px) {
             .navbar-material .nav-wrapper .brand-logo img {
                 height: 56px;
@@ -61,7 +70,7 @@
                 <div class="collection">
                     {% for student in students %}
 
-                    <a href="/admin/answers?id={{student['_id']}}" class="collection-item">{{student["name"]}}</a>
+                    <a href="/admin/answers?id={{student['_id']}}" class="collection-item">{{student["name"]}} | {{student["checked"]}}</a>
 
                     {% end %}
                 </div>
@@ -137,7 +146,7 @@
                 <div class="col s12 m12">
                     <div class="card">
                         <div class="card-content">
-                            <span class="card-title">{% raw question["text"] %}</span>
+                            {% raw question["text"] %}
                             <div class="row">
                                 {%if question["type"]=="var"%}
 
