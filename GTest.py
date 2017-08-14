@@ -212,11 +212,11 @@ class StudentsAnswersHandler(tornado.web.RequestHandler):
             summa = 0
             for answer in user['answers']:
                 if answer["direction"] == direction:
-                    if (answer["points"]==''):
-                        answer["points"]='0'
-                    if (str(type(answer["points"]))=="<class 'int'>"):
-                        answer["points"] = str(answer["points"])
-                    summa += float(answer["points"].replace(',', '.'))
+                    try:
+		        summa += float(str(answer["points"]).replace(',', '.'))
+                    except:
+                        ### Wrong number of points set
+                        pass
             user[direction] = summa
         self.render("answers.html", answers=answers, questions=questions, user=user)
 
